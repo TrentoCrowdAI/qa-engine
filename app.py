@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from flask import Flask, request
@@ -9,6 +10,11 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+@app.route('/text_model_dir')
+def hello_world():
+    return os.path.isdir('actual_models')
 
 
 @app.route('/api/prediction', methods=['POST'])
@@ -43,3 +49,7 @@ if __name__ == '__main__':
 #TODO: model integration documentation
 #TODO: train model API
 #TODO: API data validation
+
+#TODO: cron job to delete tmp dir
+#TODO: api to expose models name, and add "models_completed": true in the response json
+#TODO: threadpool executor?
