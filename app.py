@@ -12,9 +12,15 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/text_model_dir')
-def hello_world():
-    return os.path.isdir('actual_models')
+@app.route('/test_model_dir')
+def test_model_dir():
+    actual_models_dir_present = os.path.isdir('actual_models')
+    bert_model_dir_present = os.path.isdir('actual_models/bert-model')
+    to_rtn = {
+        "actual_models_dir": actual_models_dir_present,
+        "bert-model": bert_model_dir_present
+    }
+    return to_rtn
 
 
 @app.route('/api/prediction', methods=['POST'])
