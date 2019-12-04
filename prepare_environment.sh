@@ -17,7 +17,7 @@ if ! test -f "$READY_MODELS_FILE";  then
   touch tmp/cookies.txt
   wget --load-cookies tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id='$FILEID -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id="$FILEID -O $FILENAME || exit
   rm -r tmp
-  unzip $FILENAME || exit
+  unzip -o $FILENAME || exit
 
   git clone https://github.com/chiayewken/bert-qa || exit
   mkdir -p squad_dir
