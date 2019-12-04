@@ -20,7 +20,8 @@ def test_model_dir():
         "environment_ready": qa_models_integrator.is_environment_ready(),
         "actual_models_dir": actual_models_dir_present,
         "bert-model": bert_model_dir_present,
-        "root_files": os.listdir()
+        "root_files": os.listdir(),
+        "actual_models_files": os.listdir('actual_models') if actual_models_dir_present else []
     }
     return to_rtn
 
