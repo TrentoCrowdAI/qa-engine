@@ -1,7 +1,6 @@
 import json
 import os
-
-import qa_constants
+from . import qa_constants
 
 OUT_PREDICTION_FILE = "model_out_prediction_formatted.json"
 

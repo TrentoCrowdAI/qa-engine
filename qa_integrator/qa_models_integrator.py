@@ -1,17 +1,33 @@
+import importlib
+import os
+from os import path
 import shutil
 import uuid
-import qa_models_available
+from . import qa_models_available
 import threading
 
 modules = []
 PREDICTION_TMP_DIR_PREFIX = "tmpPrediction_"
 
 for model in qa_models_available.models_available:
-    print("Importing model: " + model['from'])
-    _temp = __import__(model['from'], {"__name__": __name__}, locals(), [model['name']], -1)
-    _module = getattr(_temp, model['name'])
-    setattr(_module, 'api_name', model['api_name'])
-    modules.append(_module)
+    _temp = importlib.import_module("." + model['name'], model['from'])
+    setattr(_temp, 'api_name', model['api_name'])
+    print(_temp.test_function())
+    modules.append(_temp)
+
+
+def prepare_environment_thread_function():
+    print("running prepare_environment.sh")
+    os.system('/bin/bash prepare_environment.sh')
+
+
+def prepare_environment():
+    prepare_environment_thread = threading.Thread(target=prepare_environment_thread_function, args="")
+    prepare_environment_thread.start()
+
+
+def is_environment_ready():
+    return path.exists("actual_models/ready_models_file.txt")
 
 
 def do_prediction(texts, questions, model_types):
