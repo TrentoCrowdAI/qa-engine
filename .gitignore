@@ -73,4 +73,6 @@ fabric.properties
 
 *.pyc
 
-actual_models/
+actual_models
+venv
+venv3.7
