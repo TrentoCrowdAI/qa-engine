@@ -5,9 +5,11 @@ import shutil
 import uuid
 from . import qa_models_available
 import threading
+import json
 
 modules = []
-PREDICTION_TMP_DIR_PREFIX = "tmpPrediction_"
+PREDICTION_TMP_DIR_PREFIX = "tmpPredictions/prediction_"
+PREDICTION_MODELS_REQUESTED_FILE = "models-requested.txt"
 
 for model in qa_models_available.models_available:
     _temp = importlib.import_module("." + model['name'], model['from'])
@@ -33,23 +35,26 @@ def is_environment_ready():
 def do_prediction(texts, questions, model_types):
     prediction_request_id = "request_" + str(uuid.uuid4())
     prediction_base_dir = PREDICTION_TMP_DIR_PREFIX + prediction_request_id
+    if not os.path.exists(prediction_base_dir):
+        os.makedirs(prediction_base_dir)
 
     prediction_request = {
         'id': prediction_request_id
     }
 
-    prediction_models = {}
+    prediction_models = []
 
     questions_formatted = [gen_question_entry(q) for q in questions]
 
     for module in modules:
         if ('all' in model_types) or (getattr(module, 'api_name') in model_types):
+            prediction_models.append(getattr(module, 'api_name'))
             prediction_thread = threading.Thread(target=module.do_prediction,
                                                  args=(texts, questions_formatted, prediction_base_dir + "/" + model['name']))
             prediction_thread.start()
-            #prediction_models[getattr(module, 'api_name')] = module.do_prediction(texts, questions_formatted, prediction_base_dir + "/" + model['name'])
 
-    #prediction_request['models'] = prediction_models
+    with open(os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE), "w") as f:
+        json.dump({"models": [",".join(prediction_models)]}, f)
 
     return prediction_request
 
@@ -62,10 +67,21 @@ def get_prediction(prediction_request_id, delete_prediction=False):
     }
 
     prediction_models = {}
+    requested_models = []
+    completed_models = []
+
+    with open(os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE)) as f:
+        requested_models = json.load(f)["models"]
 
     for module in modules:
-        prediction_models[getattr(module, 'api_name')] = module.get_prediction(prediction_base_dir + "/" + model['name'])
+        if getattr(module, 'api_name') in requested_models:
+            prediction, prediction_completed = module.get_prediction(os.path.join(prediction_base_dir, model['name']))
+            prediction_models[getattr(module, 'api_name')] = prediction
+            if prediction_completed:
+                completed_models.append(getattr(module, 'api_name'))
 
+    prediction_request['models_requested'] = requested_models
+    prediction_request['models_completed'] = completed_models
     prediction_request['models'] = prediction_models
 
     if delete_prediction:
