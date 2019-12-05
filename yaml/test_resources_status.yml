@@ -1,0 +1,27 @@
+Test the system resources status.
+This returns the status of resources on the server, including a flag that says if it is ready to answer
+---
+
+definitions:
+  - schema:
+      id: SystemStatus
+      properties:
+        actual_models_dir:
+          type: boolean
+          description: flag that says if directory "actual_models" is present
+        bert-model:
+          type: boolean
+          description: flag that says if directory "actual_models/bert-model" is present
+        environment_ready:
+          type: boolean
+          description: flag that says if the system has downloaded all the resources and is ready to predict
+        actual_models_files:
+          type: array
+          description: show content in "actual_models"
+        root_files:
+          type: array
+          description: show content in "actual_models"
+responses:
+  200:
+    description: Returns the system status
+    $ref: '#/definitions/SystemStatus'

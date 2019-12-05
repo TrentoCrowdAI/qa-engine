@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request
 from qa_integrator import qa_models_integrator
+from flask_swagger import swagger
 
 qa_models_integrator.prepare_environment()
 
@@ -12,8 +13,19 @@ def hello_world():
     return 'Hello World!'
 
 
+@app.route("/documentation")
+def spec():
+    swag = swagger(app, from_file_keyword='swagger_from_file')
+    swag['info']['version'] = "1.0"
+    swag['info']['title'] = "QA-Engine"
+    return swag
+
+
 @app.route('/api/test_resources_status')
 def test_model_dir():
+    """
+        swagger_from_file: yaml/test_resources_status.yml
+    """
     actual_models_dir_present = os.path.isdir('actual_models')
     bert_model_dir_present = os.path.isdir('actual_models/bert-model')
     to_rtn = {
@@ -37,6 +49,9 @@ def prepare_environment():
 
 @app.route('/api/prediction', methods=['POST'])
 def do_prediction():
+    """
+        swagger_from_file: yaml/prediction_request.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
@@ -56,6 +71,9 @@ def do_prediction():
 
 @app.route('/api/prediction', methods=['GET'])
 def get_prediction():
+    """
+        swagger_from_file: yaml/prediction_completed.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
@@ -75,6 +93,9 @@ def get_prediction():
 
 @app.route('/api/models', methods=['GET'])
 def get_models():
+    """
+        swagger_from_file: yaml/models_get.yml
+    """
     models = []
     for model in qa_models_integrator.qa_models_available.models_available:
         models.append({
@@ -121,5 +142,4 @@ if __name__ == '__main__':
 #TODO: train model API
 
 #TODO: cron job to delete tmp dir
-#TODO: api to expose models name, and add "models_completed": true in the response json
 #TODO: threadpool executor?

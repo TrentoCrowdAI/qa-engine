@@ -1,0 +1,21 @@
+Get available models.
+This returns the models that are supported on QA-engine
+---
+
+definitions:
+  - schema:
+      id: AvailablePredictionModel
+      properties:
+        api_name:
+          type: string
+          description: the model name used in APIs on this QA-engine
+responses:
+  200:
+    description: Returns the system status
+    schema:
+      properties:
+        available_models:
+          type: array
+          description: an array of all available models
+          schema:
+            $ref: '#/definitions/AvailablePredictionModel'
