@@ -2,6 +2,7 @@ import os
 from flask import Flask, request
 from qa_integrator import qa_models_integrator
 from flask_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
 
 qa_models_integrator.prepare_environment()
 
@@ -20,6 +21,19 @@ def spec():
     swag['info']['version'] = "1.0"
     swag['info']['title'] = "QA-Engine"
     return swag
+
+
+SWAGGER_URL = '/swagger-ui'
+API_URL = '/api/swagger-descriptor'
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "QA-engine Swagger-UI"
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+# end Swagger specific
 
 
 @app.route('/api/test_resources_status')
