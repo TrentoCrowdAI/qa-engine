@@ -73,6 +73,17 @@ def get_prediction():
     return prediction
 
 
+@app.route('/api/models', methods=['GET'])
+def get_models():
+    models = []
+    for model in qa_models_integrator.qa_models_available.models_available:
+        models.append({
+            "api_name": model['api_name']
+        })
+
+    return {"available_models": models}
+
+
 def get_param(from_source, param_name, required=False, function_for_value=None):
     obj = {
         "name": param_name,
