@@ -71,3 +71,4 @@ responses:
         msg:
           type: string
           description: Message
+          example: "Environment is preparing... Call /api/test_resources_status to check the status"
