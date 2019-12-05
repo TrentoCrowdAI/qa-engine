@@ -13,7 +13,8 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route("/documentation")
+# Swagger specific
+@app.route("/api/swagger-descriptor")
 def spec():
     swag = swagger(app, from_file_keyword='swagger_from_file')
     swag['info']['version'] = "1.0"
@@ -87,6 +88,8 @@ def get_prediction():
         return {"missing_required_params": missing_params}, 400
 
     prediction = qa_models_integrator.get_prediction(prediction_request_id_param['value'], delete_prediction_param['value'])
+    if not prediction:
+        return {"msg": "prediction request id not found"}, 404
 
     return prediction
 

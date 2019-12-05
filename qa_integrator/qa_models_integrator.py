@@ -70,7 +70,10 @@ def get_prediction(prediction_request_id, delete_prediction=False):
     requested_models = []
     completed_models = []
 
-    with open(os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE)) as f:
+    prediction_models_file = os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE)
+    if not (path.exists(prediction_base_dir) and path.exists(prediction_models_file)):
+        return None
+    with open(prediction_models_file) as f:
         requested_models = json.load(f)["models"]
 
     for module in modules:
