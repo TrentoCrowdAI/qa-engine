@@ -64,6 +64,14 @@ responses:
         missing_required_params:
           type: array
           description: an array of params that are not correctly validated
+  404:
+    description: Prediction request id not found
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Prediction request id not found
+          example: "prediction request id not found"
   503:
     description: System not ready
     schema:
