@@ -70,17 +70,14 @@ def get_prediction_file_formatted(texts, questions_formatted):
 
 
 def get_prediction(prediction_dir):
-    obj_to_return = {
-        'prediction_completed': False,
-        'prediction': {}
-    }
+    out_prediction = {}
+    prediction_completed = False
 
-    pred_file = prediction_dir + "/" + OUT_PREDICTION_FILE
+    pred_file = os.path.join(prediction_dir, OUT_PREDICTION_FILE)
 
     if os.path.exists(pred_file):
-        obj_to_return['prediction_completed'] = True
+        prediction_completed = True
         with open(pred_file) as json_file:
             out_prediction = json.load(json_file)
-        obj_to_return['prediction'] = out_prediction
 
-    return obj_to_return
+    return out_prediction, prediction_completed
