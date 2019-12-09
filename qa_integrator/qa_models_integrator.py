@@ -1,5 +1,6 @@
 import importlib
 import os
+from concurrent.futures.thread import ThreadPoolExecutor
 from os import path
 import shutil
 import uuid
@@ -11,6 +12,9 @@ modules = []
 PREDICTION_ROOT_DIR = "tmpPredictions"
 PREDICTION_TMP_DIR_PREFIX = PREDICTION_ROOT_DIR + "/prediction_"
 PREDICTION_MODELS_REQUESTED_FILE = "models-requested.txt"
+
+
+pool_executor = ThreadPoolExecutor(max_workers=4)
 
 for model in qa_models_available.models_available:
     _temp = importlib.import_module("." + model['name'], model['from'])
@@ -50,9 +54,11 @@ def do_prediction(texts, questions, model_types):
     for module in modules:
         if ('all' in model_types) or (getattr(module, 'api_name') in model_types):
             prediction_models.append(getattr(module, 'api_name'))
-            prediction_thread = threading.Thread(target=module.do_prediction,
-                                                 args=(texts, questions_formatted, prediction_base_dir + "/" + model['name']))
-            prediction_thread.start()
+            pool_executor.submit(module.do_prediction, texts, questions_formatted, prediction_base_dir + "/" + model['name'])
+
+            # prediction_thread = threading.Thread(target=module.do_prediction,
+            #                                      args=(texts, questions_formatted, prediction_base_dir + "/" + model['name']))
+            # prediction_thread.start()
 
     with open(os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE), "w") as f:
         json.dump({"models": [",".join(prediction_models)]}, f)
