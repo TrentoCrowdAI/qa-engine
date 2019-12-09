@@ -93,6 +93,14 @@ def get_prediction(prediction_request_id, delete_prediction=False):
     return prediction_request
 
 
+def delete_prediction(prediction_id):
+    prediction_base_dir = PREDICTION_TMP_DIR_PREFIX + prediction_id
+    if not path.exists(prediction_base_dir):
+        return None
+    shutil.rmtree(prediction_base_dir, ignore_errors=True)
+    return not path.exists(prediction_base_dir)
+
+
 def gen_question_entry(q):
     return {
         "id": str(uuid.uuid4()),

@@ -101,6 +101,25 @@ def get_prediction(prediction_id):
     return prediction
 
 
+@app.route('/api/predictions/<prediction_id>', methods=['DELETE'])
+def delete_prediction(prediction_id):
+    """
+        swagger_from_file: yaml/prediction_delete.yml
+    """
+    if not qa_models_integrator.is_environment_ready():
+        return {
+            "msg": "Environment resources not ready, please try again later."
+        }, 503
+
+    result_successful = qa_models_integrator.delete_prediction(prediction_id)
+    if result_successful is None:
+        return {"msg": "prediction request id not found"}, 404
+    if not result_successful:
+        return {"msg": "something went wrong deleting, try again later"}, 503
+
+    return "deleted successfully"
+
+
 @app.route('/api/models', methods=['GET'])
 def get_models():
     """
