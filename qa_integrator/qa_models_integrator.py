@@ -8,7 +8,8 @@ import threading
 import json
 
 modules = []
-PREDICTION_TMP_DIR_PREFIX = "tmpPredictions/prediction_"
+PREDICTION_ROOT_DIR = "tmpPredictions"
+PREDICTION_TMP_DIR_PREFIX = PREDICTION_ROOT_DIR + "/prediction_"
 PREDICTION_MODELS_REQUESTED_FILE = "models-requested.txt"
 
 for model in qa_models_available.models_available:

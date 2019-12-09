@@ -3,6 +3,7 @@ from flask import Flask, request
 from qa_integrator import qa_models_integrator
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
+from crontab import CronTab
 
 qa_models_integrator.prepare_environment()
 
@@ -162,6 +163,19 @@ def str2bool(v):
 def check_required_param(param):
     return param is not None
 
+
+# Start Cron job to delete predictions directory
+try:
+    cron = CronTab(user=True)
+    cron.remove_all(comment='qa_engine_delete_unused_predictions_cron')
+    job = cron.new(
+        command='python ' + os.getcwd() + '/delete_unused_predictions_cron.py ' + os.getcwd() + '/' + qa_models_integrator.PREDICTION_ROOT_DIR,
+        comment='qa_engine_delete_unused_predictions_cron')
+    job.minute.every(2)
+
+    cron.write()
+except:
+    print("An exception occurred setting the cronjob")
 
 if __name__ == '__main__':
     app.run()
