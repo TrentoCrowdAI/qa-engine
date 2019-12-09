@@ -1,0 +1,31 @@
+Delete a prediction.
+This deletes a prediction on the engine
+---
+
+parameters:
+  - in: path
+    name: prediction_id
+    required: true
+    schema:
+      type: string
+    description: The prediction request id returned by creating a new request
+
+responses:
+  200:
+    description: Prediction deleted
+  404:
+    description: Prediction request id not found
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Prediction request id not found
+          example: "prediction request id not found"
+  503:
+    description: Something wrong deleting
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Message
+          example: "Something went wrong deleting, try again later"
