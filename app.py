@@ -62,7 +62,7 @@ def prepare_environment():
     return to_rtn
 
 
-@app.route('/api/prediction', methods=['POST'])
+@app.route('/api/predictions', methods=['POST'])
 def do_prediction():
     """
         swagger_from_file: yaml/prediction_request.yml
@@ -84,8 +84,8 @@ def do_prediction():
     return prediction_request
 
 
-@app.route('/api/prediction', methods=['GET'])
-def get_prediction():
+@app.route('/api/predictions/<prediction_id>', methods=['GET'])
+def get_prediction(prediction_id):
     """
         swagger_from_file: yaml/prediction_completed.yml
     """
@@ -94,14 +94,7 @@ def get_prediction():
             "msg": "Environment resources not ready, please try again later."
         }, 503
 
-    prediction_request_id_param = get_param(request.args, 'prediction_request_id', required=True)
-    delete_prediction_param = get_param(request.args, 'delete_prediction', required=False, function_for_value=str2bool)
-
-    missing_params = check_params([prediction_request_id_param, delete_prediction_param])
-    if missing_params:
-        return {"missing_required_params": missing_params}, 400
-
-    prediction = qa_models_integrator.get_prediction(prediction_request_id_param['value'], delete_prediction_param['value'])
+    prediction = qa_models_integrator.get_prediction(prediction_id)
     if not prediction:
         return {"msg": "prediction request id not found"}, 404
 
@@ -153,10 +146,3 @@ def check_required_param(param):
 
 if __name__ == '__main__':
     app.run()
-
-#TODO: API documentation (Swagger)
-#TODO: model integration documentation
-#TODO: train model API
-
-#TODO: cron job to delete tmp dir
-#TODO: threadpool executor?

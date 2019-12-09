@@ -41,29 +41,17 @@ definitions:
               description: array of answers
               $ref: '#/definitions/PredictionModel'
 parameters:
-  - in: query
-    name: prediction_request_id
+  - in: path
+    name: prediction_id
     required: true
     schema:
       type: string
     description: The prediction request id returned by creating a new request
-  - in: query
-    name: delete_prediction
-    schema:
-      type: boolean
-    description: Flag to force the deletion of the prediction after this request
 
 responses:
   200:
     description: Returns answers from the models
     $ref: '#/definitions/PredictionCompleted'
-  400:
-    description: Missing params
-    schema:
-      properties:
-        missing_required_params:
-          type: array
-          description: an array of params that are not correctly validated
   404:
     description: Prediction request id not found
     schema:
