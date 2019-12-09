@@ -80,7 +80,7 @@ def do_prediction():
     if missing_params:
         return {"missing_required_params": missing_params}, 400
 
-    prediction_request = qa_models_integrator.do_prediction(texts_param['value'], questions_param['value'], model_types_param['value'].split(','))
+    prediction_request = qa_models_integrator.do_prediction(texts_param['value'], questions_param['value'], model_types_param['value'])
     return prediction_request
 
 

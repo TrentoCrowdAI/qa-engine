@@ -17,12 +17,12 @@ definitions:
           type: array
           description: an array of questions which qa-engine must answerflag that says if the system has downloaded all the resources and is ready to predict
         models:
-          type: string
-          description: a comma separated string of models names that qa-engine should use to answer, or 'all' to use all the models
+          type: array
+          description: an array of string of models names that qa-engine should use to answer. Use 'all' in the array to use all the models available
       example:
         source_texts: ["Like most recipes, the origins of the dish are obscure but there are many legends. As 'carbonara' literally means 'coal miner's wife', some believe that the dish was first made as a hearty meal for Italian coal miners. Others say that it was originally made over charcoal grills, or that it was made with squid ink, giving it the color of coal. It has even been suggested that it was created by, or as a tribute to, the charcoalmen, a secret society prominent in the unification of Italy. Also, the name may be from a Roman restaurant named Carbonara. The dish is not present in Ada Boni's 1927 classic La Cucina Romana, and is unrecorded before the Second World War. It was first recorded after the war as a Roman dish, when many Italians were eating eggs and bacon supplied by American troops.\nIngredients\n-spaghetti: 450g (1 pound)\n-pancetta: 225g (\\u00bd pound)\n-egg yolks: 5\n-Pecorino Romano cheese: 178 ml (3/4 cup)\n-Parmigiano-Reggiano cheese: 178 ml (3/4 cup)\n-olive oil, extra-virgin: 3-4 tablespoons\n-pepper, freshly ground: \\u00bd tablespoon\n-salt,","Like most recipes, the origins of the dish are obscure but there are many legends. As 'carbonara' literally means 'coal miner's wife', some believe that the dish was first made as a hearty meal for Italian coal miners. Others say that it was originally made over charcoal grills, or that it was made with squid ink, giving it the color of coal. It has even been suggested that it was created by, or as a tribute to, the charcoalmen, a secret society prominent in the unification of Italy. Also, the name may be from a Roman restaurant named Carbonara. The dish is not present in Ada Boni's 1927 classic La Cucina Romana, and is unrecorded before the Second World War. It was first recorded after the war as a Roman dish, when many Italians were eating eggs and bacon supplied by American troops.\nIngredients\n-spaghetti: 450g (1 pound)\n-pancetta: 225g (\\u00bd pound)\n-egg yolks: 5\n-Pecorino Romano cheese: 178 ml (3/4 cup)\n-Parmigiano-Reggiano cheese: 178 ml (3/4 cup)\n-olive oil, extra-virgin: 3-4 tablespoons\n-pepper, freshly ground: \\u00bd tablespoon\n-salt"]
         questions: ["What does 'carbonara' mean?", "how many spaghetti do I need to make carbonara?", "how many eggs do I need to make carbonara?"]
-        models: "qa_bert,other-model,another-model"
+        models: ["qa_bert", "other-model", "another-model"]
 parameters:
   - in: body
     name: predictionRequest
