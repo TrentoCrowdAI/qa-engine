@@ -1,0 +1,19 @@
+{
+  "qa_engine": {
+    "models_available": [
+      {
+        "from": "qa_integrator.models",
+        "name": "qa_bert",
+        "api_name": "qa_bert"
+      }
+    ],
+    "predictions_root_dir": "tmpPredictions",
+    "predictions_thread_pool_executor_max_workers": 4
+  },
+  "utils_auto_delete_cronjob": {
+    "cronjob_name": "qa_engine_delete_unused_predictions_cron",
+    "job_every_n_minutes": 2,
+    "delete_older_than_minutes": 5,
+    "log_file_name": "delete_predictions_log.log"
+  }
+}

@@ -2,10 +2,11 @@ from datetime import datetime
 import os
 import sys
 import shutil
+from config_util import config
 
 prediction_root_dir = sys.argv[1]
-PREDICTION_DELETE_AFTER_MINUTES = 5
-PREDICTION_DELETE_LOG_FILE = os.path.join(prediction_root_dir, "delete_predictions_log.txt")
+PREDICTION_DELETE_AFTER_MINUTES = config.utils_auto_delete_cronjob.delete_older_than_minutes
+PREDICTION_DELETE_LOG_FILE = os.path.join(prediction_root_dir, config.utils_auto_delete_cronjob.log_file_name)
 
 
 def get_immediate_subdirectories(a_dir):

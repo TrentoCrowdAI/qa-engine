@@ -4,19 +4,19 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from os import path
 import shutil
 import uuid
-from . import qa_models_available
 import threading
 import json
+from config_util import config
 
 modules = []
-PREDICTION_ROOT_DIR = "tmpPredictions"
+PREDICTION_ROOT_DIR = config.qa_engine.predictions_root_dir
 PREDICTION_TMP_DIR_PREFIX = PREDICTION_ROOT_DIR + "/prediction_"
 PREDICTION_MODELS_REQUESTED_FILE = "models-requested.txt"
 
 
-pool_executor = ThreadPoolExecutor(max_workers=4)
+pool_executor = ThreadPoolExecutor(max_workers=config.qa_engine.predictions_thread_pool_executor_max_workers)
 
-for model in qa_models_available.models_available:
+for model in config.qa_engine.models_available:
     _temp = importlib.import_module("." + model['name'], model['from'])
     setattr(_temp, 'api_name', model['api_name'])
     print(_temp.test_function())

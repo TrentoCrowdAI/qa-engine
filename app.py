@@ -5,6 +5,8 @@ from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from crontab import CronTab
 
+from config_util import config
+
 qa_models_integrator.prepare_environment()
 
 app = Flask(__name__)
@@ -127,7 +129,7 @@ def get_models():
         swagger_from_file: yaml/models_get.yml
     """
     models = []
-    for model in qa_models_integrator.qa_models_available.models_available:
+    for model in config.qa_engine.models_available:
         models.append({
             "api_name": model['api_name']
         })
@@ -170,8 +172,8 @@ try:
     cron.remove_all(comment='qa_engine_delete_unused_predictions_cron')
     job = cron.new(
         command='python ' + os.getcwd() + '/delete_unused_predictions_cron.py ' + os.getcwd() + '/' + qa_models_integrator.PREDICTION_ROOT_DIR,
-        comment='qa_engine_delete_unused_predictions_cron')
-    job.minute.every(2)
+        comment=config.utils_auto_delete_cronjob.cronjob_name)
+    job.minute.every(config.utils_auto_delete_cronjob.job_every_n_minutes)
 
     cron.write()
 except:
