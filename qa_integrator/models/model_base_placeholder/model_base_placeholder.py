@@ -15,11 +15,11 @@ OUT_PREDICTION_FILE = "model_out_prediction_formatted.json"
 # 3. Write the specific code for B, C, D, E points
 # 4. Check correctness of point F
 # 5. Edit import statement inside __init__.py with this file name
-# 6. To make the model available to the integrator, edit the file qa_models_available.py adding an object of this type:
+# 6. To make the model available to the integrator, edit the file config.json adding an object of this type in the qa_engine.models_available array:
 #      {
-#         'from': 'qa_integrator.models', # Position of the model used by the integrator
-#         'name': 'qa_bert', # Name of the model to import
-#         'api_name': 'qa_bert' # Name of the model to be exposed/accessed by the service APIs
+#         "from": "qa_integrator.models", # Position of the model used by the integrator
+#         "name": "qa_bert", # Name of the model to import
+#         "api_name": "qa_bert" # Name of the model to be exposed/accessed by the service APIs
 #     }
 
 
