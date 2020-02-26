@@ -6,9 +6,12 @@ definitions:
   - schema:
       id: PredictionModel
       properties:
-        id:
+        question_id:
           type: string
           description: the question id
+        document_id:
+          type: string
+          description: the document id to which the answer refers
         question:
           type: string
           description: the question text
