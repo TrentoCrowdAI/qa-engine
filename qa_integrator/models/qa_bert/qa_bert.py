@@ -1,5 +1,6 @@
 import json
 import os
+import copy
 from . import qa_constants
 
 OUT_PREDICTION_FILE = "model_out_prediction_formatted.json"
@@ -9,15 +10,19 @@ def test_function():
     return "Model BERT imported correctly"
 
 
-def do_prediction(texts, questions_formatted, prediction_dir):
+def do_prediction(documents, questions_formatted, prediction_dir):
     if not os.path.exists(prediction_dir):
         os.makedirs(prediction_dir)
 
     prediction_file = prediction_dir + "/my_file_qa.json"
-    prediction_file_content = get_prediction_file_formatted(texts, questions_formatted)
+    prediction_documents = []
+    documents_ids = []
+    for document in documents:
+        documents_ids.append(document['id'])
+        prediction_documents.append(get_prediction_file_formatted(document['text'], document['id'], questions_formatted))
 
     with open(prediction_file, "w") as f:
-        json.dump({"data": [prediction_file_content]}, f)
+        json.dump({"data": prediction_documents}, f)
 
     os.system("python " + qa_constants.QA_BERT_MODEL_BASE_DIR + "/bert-qa/run_squad.py \
                   --vocab_file=" + qa_constants.QA_BERT_MODEL_BASE_DIR + "/bert-model/bert_base/vocab.txt \
@@ -37,12 +42,13 @@ def do_prediction(texts, questions_formatted, prediction_dir):
         answers = json.load(json_file)
 
     complete_predictions = []
-    for paragraph in prediction_file_content["paragraphs"]:
-        for question in paragraph["qas"]:
+    for document_id in documents_ids:
+        for question in questions_formatted:
             complete_answer = {
-                "id": question["id"],
+                "document_id": document_id,
+                "question_id": question["id"],
                 "question": question["question"],
-                "answer": answers[question["id"]]
+                "answer": answers[document_id + "_" + question["id"]]
             }
             complete_predictions.append(complete_answer)
 
@@ -52,15 +58,14 @@ def do_prediction(texts, questions_formatted, prediction_dir):
     return complete_predictions
 
 
-def get_prediction_file_formatted(texts, questions_formatted):
-    paragraphs = []
-    for text in texts:
-        paragraphs.append(
-            {
-                "context": text,
-                "qas": questions_formatted
-            }
-        )
+def get_prediction_file_formatted(text, document_id, questions_formatted):
+    qas = copy.deepcopy(questions_formatted)
+    for question in qas:
+        question['id'] = document_id + "_" + question['id']
+    paragraphs = [{
+        "context": text,
+        "qas": qas
+    }]
 
     output = {
         "title": "Test Title",

@@ -75,15 +75,15 @@ def do_prediction():
             "msg": "Environment resources not ready, please try again later."
         }, 503
 
-    texts_param = get_param(request.json, 'source_texts', required=True)
+    documents_param = get_param(request.json, 'documents', required=True)
     questions_param = get_param(request.json, 'questions', required=True)
     model_types_param = get_param(request.json, 'models', required=True)
 
-    missing_params = check_params([texts_param, questions_param, model_types_param])
+    missing_params = check_params([documents_param, questions_param, model_types_param])
     if missing_params:
         return {"missing_required_params": missing_params}, 400
 
-    prediction_request = qa_models_integrator.do_prediction(texts_param['value'], questions_param['value'], model_types_param['value'])
+    prediction_request = qa_models_integrator.do_prediction(documents_param['value'], questions_param['value'], model_types_param['value'])
     return prediction_request
 
 

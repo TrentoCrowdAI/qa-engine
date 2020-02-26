@@ -37,7 +37,7 @@ def is_environment_ready():
     return path.exists("actual_models/ready_models_file.txt")
 
 
-def do_prediction(texts, questions, model_types):
+def do_prediction(documents, questions, model_types):
     prediction_request_id = "request_" + str(uuid.uuid4())
     prediction_base_dir = PREDICTION_TMP_DIR_PREFIX + prediction_request_id
     if not os.path.exists(prediction_base_dir):
@@ -54,11 +54,7 @@ def do_prediction(texts, questions, model_types):
     for module in modules:
         if ('all' in model_types) or (getattr(module, 'api_name') in model_types):
             prediction_models.append(getattr(module, 'api_name'))
-            pool_executor.submit(module.do_prediction, texts, questions_formatted, prediction_base_dir + "/" + model['name'])
-
-            # prediction_thread = threading.Thread(target=module.do_prediction,
-            #                                      args=(texts, questions_formatted, prediction_base_dir + "/" + model['name']))
-            # prediction_thread.start()
+            pool_executor.submit(module.do_prediction, documents, questions_formatted, prediction_base_dir + "/" + model['name'])
 
     with open(os.path.join(prediction_base_dir, PREDICTION_MODELS_REQUESTED_FILE), "w") as f:
         json.dump({"models": [",".join(prediction_models)]}, f)
