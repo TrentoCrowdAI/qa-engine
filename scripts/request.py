@@ -28,6 +28,7 @@ def clean_html(html):
 
 documents = []
 questions = []
+domains = set()
 
 url_fetching_custom_headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -51,6 +52,7 @@ with open('input/documents.csv') as documents_csvfile:
             'downloaded_date': datetime.datetime.now(),
             'document_id': str(uuid.uuid4())
         })
+        domains.add(row['domain'])
 
 with open('input/questions.csv') as questions_csvfile:
     readCSV = csv.DictReader(questions_csvfile, delimiter=',')
@@ -60,76 +62,89 @@ with open('input/questions.csv') as questions_csvfile:
             'domain': row['domain']
         })
 
-param_documents = []
-for document in documents:
-    param_documents.append({
-        'id': document['document_id'],
-        'text': document['document_content']
-    })
+engine_requests = []
 
-param_questions = []
-for question in questions:
-    param_questions.append(question['question'])
+print(domains)
+for domain in domains:
+    param_documents = []
+    for document in documents:
+        if document['domain'] == domain:
+            param_documents.append({
+                'id': document['document_id'],
+                'text': document['document_content']
+            })
 
-data = {
-    "documents": param_documents,
-    "questions": param_questions,
-    "models": "all"
-}
+    param_questions = []
+    for question in questions:
+        if question['domain'] == domain:
+            param_questions.append(question['question'])
 
-# with open('rest_post_data.json', 'w') as f:
-#    json.dump(data, f)
+    data = {
+        "documents": param_documents,
+        "questions": param_questions,
+        "models": "all"
+    }
 
-creationResponse = requests.post(prediction_service_url, json=data, headers={"Content-Type": "application/json"})
+    print("Domain: " + domain + "  Quest: " + str(len(param_questions)))
 
-if creationResponse.ok:
-    print(creationResponse.json()['id'])
+    response = requests.post(prediction_service_url, json=data, headers={"Content-Type": "application/json"})
 
-    repeat_request = True
-    response_json = None
+    engine_requests.append(
+        (domain, response)
+    )
+    if response.ok:
+        print("Created request for domain: " + domain + "\t with id: " + response.json()['id'] + "\t with " + str(len(param_questions)) + " questions")
 
-    while repeat_request:
-        print("Checking...")
-        getResponse = requests.get(prediction_service_url + "/" + creationResponse.json()['id'],
-                                   headers={"Content-Type": "application/json"})
-        if getResponse.ok:
-            response_json = getResponse.json()
-            if len(response_json["models_requested"]) == len(response_json['models_completed']):
-                repeat_request = False
-            time.sleep(5)
+if not os.path.exists('output'):
+    os.makedirs('output')
+current_timestamp = int(time.time())
+output_file_name = 'output/output_' + str(current_timestamp) + '.csv'
+with open(output_file_name, mode='w') as answers_csv:
+    answers_writer = csv.writer(answers_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    answers_writer.writerow([
+        'document_url',
+        'document_content',
+        'domain',
+        'downloaded_date',
+        'question',
+        'answer',
+        'model'
+    ])
+    for domain, creationResponse in engine_requests:
+        if creationResponse.ok:
+            # print(creationResponse.json()['id'])
+
+            repeat_request = True
+            response_json = None
+
+            while repeat_request:
+                print("Checking... " + creationResponse.json()['id'])
+                getResponse = requests.get(prediction_service_url + "/" + creationResponse.json()['id'],
+                                           headers={"Content-Type": "application/json"})
+                if getResponse.ok:
+                    response_json = getResponse.json()
+                    if len(response_json["models_requested"]) == len(response_json['models_completed']):
+                        repeat_request = False
+                    time.sleep(5)
+                else:
+                    repeat_request = False
+
+            if response_json is not None:
+                #print(response_json)
+                for document in documents:
+                    for qa_model_name in response_json['models_completed']:
+                        for answer in [item for item in response_json['models'][qa_model_name] if
+                                       item.get('document_id') == document['document_id']]:
+                            answers_writer.writerow([
+                                document['document_url'],
+                                document['document_content'].replace("\n", "\\n"),
+                                document['domain'],
+                                document['downloaded_date'],
+                                answer['question'],
+                                answer['answer'],
+                                qa_model_name,
+                            ])
         else:
-            repeat_request = False
+            creationResponse.raise_for_status()
 
-    if response_json is not None:
-        print(response_json)
-        if not os.path.exists('output'):
-            os.makedirs('output')
-        with open('output/output.csv', mode='w') as answers_csv:
-            answers_writer = csv.writer(answers_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            answers_writer.writerow([
-                'document_url',
-                'document_content',
-                'domain',
-                'downloaded_date',
-                'question',
-                'answer',
-                'model'
-            ])
-
-            for document in documents:
-                for qa_model_name in response_json['models_completed']:
-                    for answer in [item for item in response_json['models'][qa_model_name] if
-                                   item.get('document_id') == document['document_id']]:
-                        answers_writer.writerow([
-                            document['document_url'],
-                            document['document_content'].replace("\n", "\\n"),
-                            document['domain'],
-                            document['downloaded_date'],
-                            answer['question'],
-                            answer['answer'],
-                            qa_model_name,
-                        ])
-
-
-else:
-    creationResponse.raise_for_status()
+    print("Output file: " + output_file_name)

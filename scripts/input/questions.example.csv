@@ -1,4 +1,5 @@
 question,domain
-Where is pasta cooked?,Methodology
-how many spaghetti do I need to make carbonara?,Ingredients
-how many eggs do I need to make carbonara?,Ingredients
+Where is pasta cooked?,Recipe
+how many spaghetti do I need to make carbonara?,Recipe
+how many eggs do I need to make carbonara?,Recipe
+Other question, not included?,OtherDomain
