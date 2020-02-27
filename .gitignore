@@ -78,3 +78,7 @@ venv
 venv3.7
 tmpPredictions
 config.json
+
+scripts/output/*
+scripts/input/documents.csv
+scripts/input/questions.csv
