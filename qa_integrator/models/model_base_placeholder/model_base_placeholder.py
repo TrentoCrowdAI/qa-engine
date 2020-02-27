@@ -28,11 +28,11 @@ def test_function():
     return "Model BASE PLACEHOLDER imported correctly"
 
 
-def do_prediction(texts, questions_formatted, prediction_dir):
+def do_prediction(documents, questions_formatted, prediction_dir):
     """
        Start a prediction
 
-       :param list str texts: An array of strings with the source text from where the predictor must search answers
+       :param list str documents: An array of documents composed by fields: id, text
        :param list str questions_formatted: An array of strings with the questions to be asked to the engine
        :param str prediction_dir: The base prediction dir to use for this prediction
     """
