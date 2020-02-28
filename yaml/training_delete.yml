@@ -1,0 +1,31 @@
+Delete a training request.
+This deletes a training request on the engine
+---
+
+parameters:
+  - in: path
+    name: training_id
+    required: true
+    schema:
+      type: string
+    description: The training request id returned by creating a new request
+
+responses:
+  200:
+    description: Training deleted
+  404:
+    description: Training request id not found
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Training request id not found
+          example: "training request id not found"
+  503:
+    description: Something wrong deleting
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Message
+          example: "Something went wrong deleting, try again later"

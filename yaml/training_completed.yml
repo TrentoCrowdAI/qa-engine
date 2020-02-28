@@ -1,0 +1,61 @@
+Get training status.
+This get a training request on the qa-engine, and returns status of it
+---
+
+definitions:
+  - schema:
+      id: TrainingCompleted
+      required:
+        - training_id
+        - models_requested
+        - models_completed
+        - requested_at
+        - queue_position
+        - finished_at
+      properties:
+        training_id:
+          type: string
+          description: the training request id
+        models_requested:
+          type: array
+          description: the array of requested models
+        models_completed:
+          type: array
+          description: the array of models that have completed the training phase
+        requested_at:
+          type: integer
+          description: timestamp of when the request was made
+        finished_at:
+          type: integer
+          description: timestamp of when the request was finished, or null if not finished yet
+        queue_position:
+          type: integer
+          description: position in the waiting queue, or -1 if finished
+parameters:
+  - in: path
+    name: training_id
+    required: true
+    schema:
+      type: string
+    description: The training request id returned by creating a new request
+
+responses:
+  200:
+    description: Returns training status
+    $ref: '#/definitions/TrainingCompleted'
+  404:
+    description: Training request id not found
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Training request id not found
+          example: "Training request id not found"
+  503:
+    description: System not ready
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Message
+          example: "Environment is preparing... Call /api/test_resources_status to check the status"

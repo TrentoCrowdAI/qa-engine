@@ -1,0 +1,78 @@
+Start model training.
+This start model training on the qa-engine, and returns a training request id that the user should use to get the status.
+---
+
+definitions:
+  - schema:
+      id: TrainingRequest
+      required:
+        - data
+        - models
+      properties:
+        data:
+          type: array
+          description: a list of documents and questions/answers
+          items:
+            type: object
+            properties:
+              document_title:
+                type: string
+              document_text:
+                type: string
+              question_answers:
+                type: array
+                description: a list questions/answers
+                items:
+                  type: object
+                  properties:
+                    question:
+                      type: string
+                    answers:
+                      type: object
+                      properties:
+                        answer_start:
+                          type: integer
+                          description: the starting index of this answer in the document
+                        text:
+                          type: string
+                          description: the textual answer
+            required:
+              - document_text
+              - question_answers
+        models:
+          type: array
+          description: an array of string of models names that qa-engine must traing. Use 'all' in the array to use all the models available
+      example:
+        data: [{"document_title":"Rome","document_text":"Rome (Latin and Italian: Roma [ˈroːma]), is the capital city and a special comune of Italy (named Comune di Roma Capitale). Rome also serves as the capital of the Lazio region. With 2,879,728 residents in 1,285 km2 (496.1 sq mi), it is also the country's most populated comune. It is the third most populous city in the European Union by population within city limits. It is the centre of the Metropolitan City of Rome, which has a population of 4,355,725 residents, thus making it the second or third most populous metropolitan city in Italy depending on definition. Rome is located in the central-western portion of the Italian Peninsula, within Lazio (Latium), along the shores of the Tiber. Vatican City (the smallest country in the world) is an independent country inside the city boundaries of Rome, the only existing example of a country within a city; for this reason Rome has sometimes been defined as the capital of two states.","question_answers":[{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]},{"question":"Where is Rome?","answers":[{"answer_start":86,"text":"Italy"}]}]}]
+        models: ["qa_bert", "other-model", "another-model"]
+parameters:
+  - in: body
+    name: trainingRequest
+    required: true
+    description: The training request object.
+    schema:
+      $ref: '#/definitions/TrainingRequest'
+
+responses:
+  200:
+    description: Returns a training request id
+    schema:
+      properties:
+        id:
+          type: string
+          description: training request id
+  400:
+    description: Missing params
+    schema:
+      properties:
+        missing_required_params:
+          type: array
+          description: an array of params that are not correctly validated
+  503:
+    description: System not ready
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Message
+          example: "Environment is preparing... Call /api/test_resources_status to check the status"

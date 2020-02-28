@@ -1,0 +1,53 @@
+Get training queue.
+This get the list of training requests pending.
+---
+
+definitions:
+  - schema:
+      id: TrainingsQueue
+      required:
+        - queue
+        - completed
+      properties:
+        queue:
+          type: array
+          description: list of training requests pending
+          items:
+            type: object
+            properties:
+              training_id:
+                type: string
+              requested_at:
+                type: string
+              queue_position:
+                type: number
+        completed:
+          type: array
+          description: list of training requests completed and not deleted yet
+          items:
+            type: object
+            properties:
+              training_id:
+                type: string
+              requested_at:
+                type: string
+responses:
+  200:
+    description: Returns training queue
+    $ref: '#/definitions/TrainingsQueue'
+  404:
+    description: Training request id not found
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Training request id not found
+          example: "Training request id not found"
+  503:
+    description: System not ready
+    schema:
+      properties:
+        msg:
+          type: string
+          description: Message
+          example: "Environment is preparing... Call /api/test_resources_status to check the status"
