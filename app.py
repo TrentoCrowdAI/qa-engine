@@ -139,6 +139,9 @@ def get_models():
 
 @app.route('/api/trainings', methods=['POST'])
 def do_training():
+    """
+        swagger_from_file: yaml/training_request.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
@@ -157,6 +160,9 @@ def do_training():
 
 @app.route('/api/trainings/<training_id>', methods=['GET'])
 def get_training(training_id):
+    """
+        swagger_from_file: yaml/training_completed.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
@@ -171,6 +177,9 @@ def get_training(training_id):
 
 @app.route('/api/trainings', methods=['GET'])
 def get_trainings_queue():
+    """
+        swagger_from_file: yaml/training_queue.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
@@ -182,6 +191,9 @@ def get_trainings_queue():
 
 @app.route('/api/trainings/<training_id>', methods=['DELETE'])
 def delete_training(training_id):
+    """
+        swagger_from_file: yaml/training_delete.yml
+    """
     if not qa_models_integrator.is_environment_ready():
         return {
             "msg": "Environment resources not ready, please try again later."
