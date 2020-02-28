@@ -14,7 +14,7 @@ google-auth==1.7.1
 google-auth-oauthlib==0.4.1
 google-pasta==0.1.8
 grpcio==1.25.0
-gunicorn==20.0.4
+gunicorn==19.10.0
 h5py==2.10.0
 html2text==2020.1.16
 htmlmin==0.1.12
