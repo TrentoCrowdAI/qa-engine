@@ -11,7 +11,7 @@ if [ "$1" = "true" ] ; then
 fi
 
 if ! test -f "$READY_MODELS_FILE";  then
-  FILEID="1rDO41n4-XnkVlfK2Z1woX7pu1YdGKkLY"
+  FILEID="1PJB54HWU27Euim5K5QQVjzbC_b4c3t2X"
   FILENAME="bert-model.zip"
   mkdir tmp
   touch tmp/cookies.txt
