@@ -2,6 +2,8 @@ import os
 import json
 
 OUT_PREDICTION_FILE = "model_out_prediction_formatted.json"
+STATUS_COMPLETED_FILE = "completed.txt"
+STATUS_FAILED_FILE = "failed.txt"
 
 # This python package must expose 3 functions that are used by the integrator:
 # - test_function()
@@ -11,9 +13,9 @@ OUT_PREDICTION_FILE = "model_out_prediction_formatted.json"
 # || STEPS TO CREATE A COMPATIBLE MODEL ||
 #
 # 1. Search for ----> letter. <---- comments in this file
-# 2. Compile A.
-# 3. Write the specific code for B, C, D, E points
-# 4. Check correctness of point F
+# 2. Write A.
+# 3. Write the specific code for B, C, D, E, G, H, I points
+# 4. Check correctness of point F, J, K
 # 5. Edit import statement inside __init__.py with this file name
 # 6. To make the model available to the integrator, edit the file config.json adding an object of this type in the qa_engine.models_available array:
 #      {
@@ -95,3 +97,66 @@ def get_prediction(prediction_dir):
             out_prediction = json.load(json_file)
 
     return out_prediction, prediction_completed
+
+
+def do_training(documents_questions, training_dir):
+    """
+       Start training
+
+       :param list str documents_questions: A list of documents and questions/answers with this format:
+        {
+            "document_title": "[1]",
+            "document_text": "[2]",
+            "question_answers": [
+                {
+                    "question": "[3]",
+                    "answers": [
+                        {
+                            "answer_start": [4],
+                            "text": "[5]"
+                        }
+                    ]
+                }
+            ]
+        }
+       :param str training_dir: The base training dir to use for this training process
+    """
+    if not os.path.exists(training_dir):
+        os.makedirs(training_dir)
+
+    training_file = training_dir + "/my_file_qa.json"
+    # ----> G. WRITE THE CODE TO PREPARE THE TRAINING REQUEST <----
+    # EXAMPLE:
+    # training_documents = []
+    # for document_questions in documents_questions:
+    #     training_documents.append(get_training_file_formatted(document_questions))
+    # with open(training_file, "w") as f:
+    #     json.dump({"data": training_documents}, f)
+
+    # ----> H. WRITE THE CODE TO START THE PREDICTION <----
+    # EXAMPLE:
+    # os.system("path_to_predictor/predictor_model/run_training.sh --output_dir=" + training_dir)
+
+    # ----> I. WRITE THE CODE TO "DEPLOY" THE NEW GENERATED MODEL <----
+    # EXAMPLE:
+    # os.rename(training_dir + "/model.ckpt-0.meta", path_to_predictor/predictor_model + "/model_latest.ckpt-0.meta")
+    # os.rename(training_dir + "/model.ckpt-0.index", path_to_predictor/predictor_model + "/model_latest.ckpt-0.index")
+    # os.rename(training_dir + "/model.ckpt-0.data-00000-of-00001", path_to_predictor/predictor_model + "/model_latest.ckpt-0.data-00000-of-00001")
+
+    # LET THE ENGINE KNOWS THAT THE PROCESS COMPLETED
+    with open(training_dir + "/" + STATUS_COMPLETED_FILE, "w") as f:
+        json.dump({}, f)
+
+    return True
+
+
+# ----> J. CHECK CORRECTNESS
+def is_training_completed(training_dir):
+    training_file = os.path.join(training_dir, STATUS_COMPLETED_FILE)
+    return os.path.exists(training_file)
+
+
+# ----> K. CHECK CORRECTNESS
+def training_completed_at(training_dir):
+    training_file = os.path.join(training_dir, STATUS_COMPLETED_FILE)
+    return os.path.getmtime(training_file)

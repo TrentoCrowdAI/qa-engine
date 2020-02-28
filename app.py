@@ -137,6 +137,65 @@ def get_models():
     return {"available_models": models}
 
 
+@app.route('/api/trainings', methods=['POST'])
+def do_training():
+    if not qa_models_integrator.is_environment_ready():
+        return {
+            "msg": "Environment resources not ready, please try again later."
+        }, 503
+
+    documents_param = get_param(request.json, 'data', required=True)
+    model_types_param = get_param(request.json, 'models', required=True)
+
+    missing_params = check_params([documents_param, model_types_param])
+    if missing_params:
+        return {"missing_required_params": missing_params}, 400
+
+    prediction_request = qa_models_integrator.do_training(documents_param['value'], model_types_param['value'])
+    return prediction_request
+
+
+@app.route('/api/trainings/<training_id>', methods=['GET'])
+def get_training(training_id):
+    if not qa_models_integrator.is_environment_ready():
+        return {
+            "msg": "Environment resources not ready, please try again later."
+        }, 503
+
+    training = qa_models_integrator.get_training(training_id)
+    if not training:
+        return {"msg": "training request id not found"}, 404
+
+    return training
+
+
+@app.route('/api/trainings', methods=['GET'])
+def get_trainings_queue():
+    if not qa_models_integrator.is_environment_ready():
+        return {
+            "msg": "Environment resources not ready, please try again later."
+        }, 503
+
+    response = qa_models_integrator.get_training_requests(formatted=True)
+    return response
+
+
+@app.route('/api/trainings/<training_id>', methods=['DELETE'])
+def delete_training(training_id):
+    if not qa_models_integrator.is_environment_ready():
+        return {
+            "msg": "Environment resources not ready, please try again later."
+        }, 503
+
+    result_successful = qa_models_integrator.delete_training(training_id)
+    if result_successful is None:
+        return {"msg": "training request id not found"}, 404
+    if not result_successful:
+        return {"msg": "something went wrong deleting, try again later"}, 503
+
+    return "deleted successfully"
+
+
 def get_param(from_source, param_name, required=False, function_for_value=None):
     obj = {
         "name": param_name,
@@ -171,7 +230,7 @@ try:
     cron = CronTab(user=True)
     cron.remove_all(comment='qa_engine_delete_unused_predictions_cron')
     job = cron.new(
-        command='python ' + os.getcwd() + '/delete_unused_predictions_cron.py ' + os.getcwd() + '/' + qa_models_integrator.PREDICTION_ROOT_DIR,
+        command='python ' + os.getcwd() + '/delete_unused_predictions_cron.py',
         comment=config.utils_auto_delete_cronjob.cronjob_name)
     job.minute.every(config.utils_auto_delete_cronjob.job_every_n_minutes)
 

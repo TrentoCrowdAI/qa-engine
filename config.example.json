@@ -8,12 +8,14 @@
       }
     ],
     "predictions_root_dir": "tmpPredictions",
+    "trainings_root_dir": "tmpTrainings",
     "predictions_thread_pool_executor_max_workers": 4
   },
   "utils_auto_delete_cronjob": {
     "cronjob_name": "qa_engine_delete_unused_predictions_cron",
     "job_every_n_minutes": 2,
-    "delete_older_than_minutes": 5,
+    "delete_older_than_minutes_predictions": 60,
+    "delete_older_than_minutes_trainings": 60,
     "log_file_name": "delete_predictions_log.log"
   }
 }
