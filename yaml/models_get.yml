@@ -17,5 +17,5 @@ responses:
         available_models:
           type: array
           description: an array of all available models
-          schema:
+          items:
             $ref: '#/definitions/AvailablePredictionModel'

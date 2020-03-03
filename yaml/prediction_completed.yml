@@ -32,9 +32,15 @@ definitions:
         models_requested:
           type: array
           description: the array of requested models that have to answer
+          items:
+            type: string
+            description: model name
         models_completed:
           type: array
           description: the array of models that have completed the answering phase
+          items:
+            type: string
+            description: model name
         models:
           type: object
           description: a hashmap with requested model names as key, and the array of answers as value

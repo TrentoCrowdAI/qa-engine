@@ -5,13 +5,6 @@ This get a training request on the qa-engine, and returns status of it
 definitions:
   - schema:
       id: TrainingCompleted
-      required:
-        - training_id
-        - models_requested
-        - models_completed
-        - requested_at
-        - queue_position
-        - finished_at
       properties:
         training_id:
           type: string
@@ -19,9 +12,15 @@ definitions:
         models_requested:
           type: array
           description: the array of requested models
+          items:
+            type: string
+            description: model name
         models_completed:
           type: array
           description: the array of models that have completed the training phase
+          items:
+            type: string
+            description: model name
         requested_at:
           type: integer
           description: timestamp of when the request was made
