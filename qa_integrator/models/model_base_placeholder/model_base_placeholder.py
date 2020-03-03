@@ -64,7 +64,8 @@ def do_prediction(documents, questions_formatted, prediction_dir):
     # EXAMPLE:
     # for answer in answers:
     #     complete_answer = {
-    #         "id": answer["question_id"],
+    #         "question_id": answer["question_id"],
+    #         "document_id": answer["document_id"]
     #         "question": answer["question_text"],
     #         "answer": answer["answer"]
     #     }
