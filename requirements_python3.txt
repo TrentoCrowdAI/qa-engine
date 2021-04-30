@@ -42,7 +42,7 @@ python-json-config==1.2.3
 PyYAML==5.2
 requests==2.22.0
 requests-oauthlib==1.3.0
-rsa==4.0
+rsa==4.7
 six==1.14.0
 soupsieve==2.0
 tensorflow==1.15.2
